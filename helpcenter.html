@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GlamBook — Dashboard</title>
+  <!-- Tailwind Play CDN for quick styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js for small charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Small custom styles */
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <div class="min-h-screen flex">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="w-72 bg-white border-r border-gray-200 p-4 hidden md:block">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="h-12 w-12 bg-gradient-to-tr from-pink-400 to-yellow-300 rounded-full flex items-center justify-center text-white font-bold">GB</div>
+        <div>
+          <h1 class="text-lg font-semibold">GlamBook</h1>
+          <p class="text-sm text-gray-500">Admin Dashboard</p>
+        </div>
+      </div>
+
+      <nav class="space-y-1">
+        <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-md bg-pink-50 text-pink-600"> 
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a1 1 0 00-.894.553L7.382 6H4a1 1 0 000 2h3.382l1.724 3.447A1 1 0 0010 12a1 1 0 00.894-.553L12.618 8H16a1 1 0 000-2h-3.382l-1.724-3.447A1 1 0 0010 2z"/></svg>
+          <span class="text-sm font-medium">Overview</span>
+        </a>
+        <a href="#bookings" class="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor"><path d="M6 2a1 1 0 000 2h1v1a1 1 0 102 0V4h2v1a1 1 0 102 0V4h1a1 1 0 100-2H6zM3 7a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>
+          <span class="text-sm">Bookings</span>
+        </a>
+        <a href="#clients" class="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor"><path d="M13 7a3 3 0 11-6 0 3 3 0 016 0zM6 14a6 6 0 1112 0H6z"/></svg>
+          <span class="text-sm">Clients</span>
+        </a>
+        <a href="#portfolio" class="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor"><path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4z"/></svg>
+          <span class="text-sm">Portfolio</span>
+        </a>
+        <a href="#settings" class="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor"><path d="M11.3 1.046a1 1 0 00-2.6 0l-.184.668A7.002 7.002 0 003.715 6.32l-.657.18a1 1 0 000 1.9l.657.18a7.002 7.002 0 004.801 4.606l.184.668a1 1 0 001.6 0l.184-.668a7.002 7.002 0 004.801-4.606l.657-.18a1 1 0 000-1.9l-.657-.18a7.002 7.002 0 00-4.801-4.606L11.3 1.046z"/></svg>
+          <span class="text-sm">Settings</span>
+        </a>
+      </nav>
+
+      <div class="mt-6 pt-4 border-t border-gray-100 text-sm text-gray-600">
+        <p class="mb-2">Pro tip</p>
+        <p class="text-xs">Require a downpayment to reduce no-shows and secure bookings.</p>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <div class="flex-1">
+      <!-- Topbar -->
+      <header class="flex items-center justify-between bg-white border-b border-gray-200 p-4">
+        <div class="flex items-center gap-3">
+          <button id="toggleSidebar" class="md:hidden p-2 rounded-md bg-gray-100">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor"><path d="M3 6h14M3 10h14M3 14h14" stroke="#000" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <h2 class="text-xl font-semibold">Overview</h2>
+          <span class="text-sm text-gray-500">/ Dashboard</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="relative">
+            <input id="search" type="text" placeholder="Search bookings, clients..." class="pl-10 pr-3 py-2 rounded-lg border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-1 focus:ring-pink-300" />
+            <div class="absolute left-3 top-2.5 text-gray-400">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.9 14.32a8 8 0 111.414-1.414l3.387 3.386-1.414 1.415-3.387-3.387zM8 14a6 6 0 100-12 6 6 0 000 12z" clip-rule="evenodd"/></svg>
+            </div>
+          </div>
+
+          <button class="px-3 py-2 bg-pink-600 text-white rounded-md text-sm">New Booking</button>
+
+          <div class="flex items-center gap-3">
+            <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400&auto=format&fit=crop&ixlib=rb-4.0.3&s=placeholder" alt="Admin" class="h-8 w-8 rounded-full object-cover" />
+            <div class="text-sm text-right">
+              <div class="font-medium">Jilbert</div>
+              <div class="text-xs text-gray-500">Admin</div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="p-6 space-y-6">
+        <!-- KPI Cards -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+            <p class="text-sm text-gray-500">Today's Bookings</p>
+            <div class="flex items-center justify-between mt-2">
+              <h3 class="text-2xl font-semibold" id="todayBookings">8</h3>
+              <div class="text-sm text-green-600">+12%</div>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">Compared to last week</p>
+          </div>
+
+          <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+            <p class="text-sm text-gray-500">Revenue (Monthly)</p>
+            <div class="flex items-center justify-between mt-2">
+              <h3 class="text-2xl font-semibold">₱42,320</h3>
+              <div class="text-sm text-red-500">-3%</div>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">Net after fees</p>
+          </div>
+
+          <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+            <p class="text-sm text-gray-500">Active Clients</p>
+            <div class="flex items-center justify-between mt-2">
+              <h3 class="text-2xl font-semibold">124</h3>
+              <div class="text-sm text-green-600">+5%</div>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">Last 30 days</p>
+          </div>
+
+          <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+            <p class="text-sm text-gray-500">Average Rating</p>
+            <div class="flex items-center justify-between mt-2">
+              <h3 class="text-2xl font-semibold">4.8</h3>
+              <div class="text-sm text-yellow-500">★★★★★</div>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">From client reviews</p>
+          </div>
+        </section>
+
+        <!-- Chart + Recent Bookings -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+              <h4 class="font-semibold">Bookings This Month</h4>
+              <div class="text-sm text-gray-500">Monthly trend</div>
+            </div>
+            <canvas id="bookingsChart" height="120"></canvas>
+          </div>
+
+          <div class="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
+            <h4 class="font-semibold mb-3">Recent Bookings</h4>
+            <ul class="space-y-3 max-h-64 overflow-auto scrollbar-hide">
+              <!-- sample items -->
+              <li class="flex items-start justify-between">
+                <div>
+                  <div class="font-medium">Anna Cruz</div>
+                  <div class="text-xs text-gray-500">Wedding trial — July 12, 2025 • 10:00 AM</div>
+                </div>
+                <div class="text-sm text-green-600 font-medium">Confirmed</div>
+              </li>
+              <li class="flex items-start justify-between">
+                <div>
+                  <div class="font-medium">May Santos</div>
+                  <div class="text-xs text-gray-500">Debut — Aug 22, 2025 • 2:00 PM</div>
+                </div>
+                <div class="text-sm text-orange-500 font-medium">Pending</div>
+              </li>
+              <li class="flex items-start justify-between">
+                <div>
+                  <div class="font-medium">Kristine P.</div>
+                  <div class="text-xs text-gray-500">Portrait shoot — Sep 5, 2025 • 9:00 AM</div>
+                </div>
+                <div class="text-sm text-red-500 font-medium">Cancelled</div>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- Bookings Table -->
+        <section id="bookings" class="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <h4 class="font-semibold">All Bookings</h4>
+            <div class="text-sm text-gray-500">Showing last 30 bookings</div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-sm">
+              <thead class="text-left text-xs text-gray-500 uppercase">
+                <tr>
+                  <th class="py-2 pr-4">Client</th>
+                  <th class="py-2 pr-4">Service</th>
+                  <th class="py-2 pr-4">Date</th>
+                  <th class="py-2 pr-4">Amount</th>
+                  <th class="py-2 pr-4">Status</th>
+                  <th class="py-2 pr-4">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="bookingsTable" class="divide-y">
+                <!-- JS will populate rows -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Portfolio gallery + quick settings -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div id="portfolio" class="lg:col-span-2 bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+              <h4 class="font-semibold">Portfolio Highlights</h4>
+              <div class="text-sm text-gray-500">Latest work</div>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <img class="w-full h-40 object-cover rounded" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=placeholder" alt="makeup" />
+              <img class="w-full h-40 object-cover rounded" src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=placeholder" alt="hair" />
+              <img class="w-full h-40 object-cover rounded" src="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=placeholder" alt="bridal" />
+              <img class="w-full h-40 object-cover rounded" src="https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=placeholder" alt="editorial" />
+            </div>
+          </div>
+
+          <aside id="settings" class="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
+            <h4 class="font-semibold mb-3">Quick Settings</h4>
+            <div class="space-y-3 text-sm text-gray-700">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="font-medium">Require Downpayment</div>
+                  <div class="text-xs text-gray-400">30% by default</div>
+                </div>
+                <input id="toggleDownpayment" type="checkbox" checked class="toggle-checkbox" />
+              </div>
+
+              <div>
+                <div class="font-medium">Business Hours</div>
+                <div class="text-xs text-gray-400">Mon — Sat, 8:00 AM — 6:00 PM</div>
+              </div>
+
+              <button id="exportBtn" class="w-full mt-2 px-3 py-2 bg-gray-100 text-sm rounded">Export CSV</button>
+            </div>
+          </aside>
+        </section>
+
+      </main>
+
+      <footer class="text-center text-xs text-gray-400 py-4">© 2025 GlamBook — Made with ❤️</footer>
+    </div>
+  </div>
+
+  <!-- Modal (hidden by default) -->
+  <div id="modal" class="fixed inset-0 bg-black/40 flex items-center justify-center hidden">
+    <div class="bg-white rounded-lg w-11/12 md:w-1/2 p-4">
+      <div class="flex items-start justify-between">
+        <h3 class="font-semibold">Booking Details</h3>
+        <button id="closeModal" class="text-gray-500 text-sm">Close</button>
+      </div>
+      <div id="modalBody" class="mt-3 text-sm text-gray-700">
+        <!-- filled by JS -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Small dataset for demo
+    const bookings = [
+      {id:1, client:'Anna Cruz', service:'Wedding Trial', date:'2025-07-12 10:00', amount:4500, status:'Confirmed'},
+      {id:2, client:'May Santos', service:'Debut Makeup', date:'2025-08-22 14:00', amount:7000, status:'Pending'},
+      {id:3, client:'Kristine P.', service:'Portrait Session', date:'2025-09-05 09:00', amount:2500, status:'Cancelled'},
+      {id:4, client:'Luis Dela', service:'Bridal On-site', date:'2025-09-20 08:00', amount:15000, status:'Confirmed'},
+      {id:5, client:'Rhea G.', service:'Skincare Facial', date:'2025-09-07 11:00', amount:1200, status:'Completed'}
+    ];
+
+    // populate bookings table
+    const tbody = document.getElementById('bookingsTable');
+    function renderTable() {
+      tbody.innerHTML = '';
+      bookings.forEach(b => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="py-3 pr-4">${b.client}</td>
+          <td class="py-3 pr-4">${b.service}</td>
+          <td class="py-3 pr-4">${(new Date(b.date)).toLocaleString()}</td>
+          <td class="py-3 pr-4">₱${b.amount.toLocaleString()}</td>
+          <td class="py-3 pr-4 font-medium">${b.status}</td>
+          <td class="py-3 pr-4">
+            <button class="viewBtn text-sm text-pink-600" data-id="${b.id}">View</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // attach view handlers
+      document.querySelectorAll('.viewBtn').forEach(btn=>{
+        btn.addEventListener('click', (e)=>{
+          const id = Number(e.target.dataset.id);
+          openModal(id);
+        });
+      });
+    }
+
+    renderTable();
+
+    // Modal
+    const modal = document.getElementById('modal');
+    const modalBody = document.getElementById('modalBody');
+    document.getElementById('closeModal').addEventListener('click', ()=> modal.classList.add('hidden'));
+
+    function openModal(id) {
+      const b = bookings.find(x=>x.id===id);
+      modalBody.innerHTML = `
+        <p><strong>Client:</strong> ${b.client}</p>
+        <p><strong>Service:</strong> ${b.service}</p>
+        <p><strong>Date:</strong> ${(new Date(b.date)).toLocaleString()}</p>
+        <p><strong>Amount:</strong> ₱${b.amount.toLocaleString()}</p>
+        <p><strong>Status:</strong> ${b.status}</p>
+        <div class="mt-3 flex gap-2">
+          <button id="markComplete" class="px-3 py-1 bg-green-600 text-white rounded text-sm">Mark Complete</button>
+          <button id="cancelBtn" class="px-3 py-1 bg-red-100 text-red-600 rounded text-sm">Cancel Booking</button>
+        </div>
+      `;
+      modal.classList.remove('hidden');
+
+      document.getElementById('markComplete').addEventListener('click', ()=>{
+        b.status = 'Completed';
+        renderTable();
+        modal.classList.add('hidden');
+      });
+      document.getElementById('cancelBtn').addEventListener('click', ()=>{
+        b.status = 'Cancelled';
+        renderTable();
+        modal.classList.add('hidden');
+      });
+    }
+
+    // Sidebar toggle on mobile
+    document.getElementById('toggleSidebar').addEventListener('click', ()=>{
+      const sb = document.getElementById('sidebar');
+      sb.classList.toggle('hidden');
+    });
+
+    // Sample Chart.js chart
+    const ctx = document.getElementById('bookingsChart').getContext('2d');
+    const bookingsChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Week 1','Week 2','Week 3','Week 4'],
+        datasets: [{
+          label: 'Bookings',
+          data: [12, 18, 14, 20],
+          tension: 0.4,
+          borderWidth: 2,
+          fill: true,
+          backgroundColor: 'rgba(236,72,153,0.08)',
+          borderColor: 'rgb(236,72,153)'
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero:true } }
+      }
+    });
+
+    // Export to CSV (basic)
+    document.getElementById('exportBtn').addEventListener('click', ()=>{
+      const rows = [ ['Client','Service','Date','Amount','Status'], ...bookings.map(b=>[b.client,b.service,b.date,b.amount,b.status]) ];
+      const csv = rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], {type:'text/csv'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'glambook_bookings.csv'; a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // simple search
+    document.getElementById('search').addEventListener('input', (e)=>{
+      const q = e.target.value.toLowerCase();
+      const filtered = bookings.filter(b => b.client.toLowerCase().includes(q) || b.service.toLowerCase().includes(q));
+      // render filtered
+      tbody.innerHTML = '';
+      filtered.forEach(b => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="py-3 pr-4">${b.client}</td>
+          <td class="py-3 pr-4">${b.service}</td>
+          <td class="py-3 pr-4">${(new Date(b.date)).toLocaleString()}</td>
+          <td class="py-3 pr-4">₱${b.amount.toLocaleString()}</td>
+          <td class="py-3 pr-4 font-medium">${b.status}</td>
+          <td class="py-3 pr-4">
+            <button class="viewBtn text-sm text-pink-600" data-id="${b.id}">View</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+      document.querySelectorAll('.viewBtn').forEach(btn=>{
+        btn.addEventListener('click', (e)=>{
+          const id = Number(e.target.dataset.id);
+          openModal(id);
+        });
+      });
+    });
+
+  </script>
+</body>
+</html>
